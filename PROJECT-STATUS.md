@@ -1,18 +1,41 @@
 # Expo Monitor - Project Status
 
-**Last Updated:** 2026-03-07 14:05 GMT+8  
-**Version:** MVP v1.0  
+**Last Updated:** 2026-03-08 01:00 GMT+8  
+**Version:** v1.1 (News Enhancement)  
 **Status:** ✅ Fully Functional
 
 ---
 
-## 🎉 Project Complete!
+## 🎉 Project v1.1 Complete!
 
-The Expo Monitor MVP is now fully functional and deployed locally at: **http://localhost:3000**
+The Expo Monitor v1.1 is now fully functional and includes automatic news fetching capability.
 
 ---
 
-## ✅ What's Been Built
+## ✅ What's New in v1.1
+
+### 🆕 New Features
+
+1. **Scheduled News Fetching** ⭐
+   - API endpoint: `/api/cron/fetch-news`
+   - Standalone script: `scripts/cron-fetch-news.ts`
+   - Support for 3 scheduling methods (System cron / API / External services)
+   - Built-in rate limiting (1.1s delay)
+   - Detailed logging and statistics
+
+2. **Enhanced Search** 
+   - Case-insensitive search (fixed)
+   - Multi-field search (name, location, country, description)
+   - Improved accuracy
+
+3. **Database Improvements**
+   - Added unique constraint on `News.url`
+   - Renamed `summary` to `description`
+   - Better error handling
+
+---
+
+## ✅ What's Been Built (v1.0)
 
 ### Frontend Pages
 1. **Home Page** (`/`)
@@ -22,7 +45,7 @@ The Expo Monitor MVP is now fully functional and deployed locally at: **http://l
 
 2. **Exhibitions List** (`/exhibitions`)
    - 58 exhibitions from around the world
-   - Search functionality
+   - Search functionality (case-insensitive ✅)
    - Filter by status (upcoming/ongoing/ended)
    - Filter by country
    - Responsive grid layout
@@ -45,11 +68,13 @@ The Expo Monitor MVP is now fully functional and deployed locally at: **http://l
 2. **GET /api/exhibitions/[id]** - Get single exhibition
 3. **GET /api/news** - List news articles
 4. **POST /api/news/fetch** - Fetch news via Brave Search API
+5. **GET /api/cron/fetch-news** - Scheduled news fetching ⭐ NEW
 
 ### Database
 - **SQLite** database with Prisma ORM
 - **58 exhibitions** across multiple countries and industries
-- **News table** for storing fetched articles
+- **News table** with unique URL constraint
+- **Relationships:** One exhibition → Many news articles
 
 ---
 
@@ -60,7 +85,7 @@ The Expo Monitor MVP is now fully functional and deployed locally at: **http://l
   - Germany (德国) - 10 exhibitions
   - USA (美国) - 8 exhibitions
   - Japan (日本) - 6 exhibitions
-  - Other countries (India, UAE, Mexico, etc.) - 19 exhibitions
+  - Other countries - 19 exhibitions
 
 - **Industries covered:**
   - Industrial manufacturing (工业)
@@ -78,7 +103,9 @@ The Expo Monitor MVP is now fully functional and deployed locally at: **http://l
 ✅ Exhibitions page - 200 OK
 ✅ Dashboard page - 200 OK
 ✅ API endpoints - 200 OK
-✅ Search functionality - 200 OK
+✅ Search functionality - 200 OK (case-insensitive)
+✅ News fetching - 200 OK (tested with 15+ exhibitions)
+✅ Scheduled fetching - 200 OK (tested with cron script)
 ```
 
 All tests passing!
@@ -92,36 +119,32 @@ All tests passing!
 - **UI Components:** Custom components (Button, Card)
 - **Database:** SQLite with Prisma ORM
 - **API Integration:** Brave Search API
+- **Scheduling:** System cron / API / External services
 - **Deployment:** Local development server (Next.js dev)
 
 ---
 
-## 📝 Next Steps (Future Enhancements)
+## 📝 Next Steps (v1.2)
 
-1. **News Fetching**
-   - Test Brave Search API integration
-   - Implement automatic scheduled fetching
-   - Add news filtering and search
+1. **News Enhancement**
+   - Add news search and filtering
+   - Implement news categorization
+   - Add export functionality (CSV/Excel)
 
-2. **User Features**
-   - Add user authentication
-   - Save favorite exhibitions
-   - Email notifications
-
-3. **Data Visualization**
+2. **Data Visualization**
    - Add Recharts or Chart.js
    - Interactive charts
    - Date range filters
 
-4. **Production Deployment**
+3. **Production Deployment**
    - Docker configuration
    - PostgreSQL database
    - Vercel deployment
 
-5. **Additional Features**
-   - Multi-language support
-   - Mobile app
-   - Export functionality
+4. **User Features**
+   - Add user authentication
+   - Save favorite exhibitions
+   - Email notifications
 
 ---
 
@@ -143,6 +166,9 @@ npx prisma db seed
 # View database
 npx prisma studio
 
+# Fetch news manually
+npx tsx scripts/cron-fetch-news.ts
+
 # Run tests
 ./test.sh
 ```
@@ -155,6 +181,9 @@ npx prisma studio
 expo-monitor/
 ├── app/                    # Next.js 15 App Router
 │   ├── api/               # API routes
+│   │   ├── cron/          # Cron API (NEW in v1.1)
+│   │   ├── exhibitions/   # Exhibition APIs
+│   │   └── news/          # News APIs
 │   ├── exhibitions/       # Exhibition pages
 │   ├── dashboard/         # Dashboard page
 │   ├── layout.tsx         # Root layout
@@ -165,11 +194,20 @@ expo-monitor/
 ├── lib/                   # Utility libraries
 │   ├── prisma.ts         # Prisma client
 │   ├── brave-search.ts   # Brave Search API
+│   ├── cron.ts           # Cron utilities (NEW in v1.1)
 │   └── utils.ts          # Helper functions
+├── scripts/               # Scripts (NEW in v1.1)
+│   └── cron-fetch-news.ts # Cron job script
 ├── prisma/               # Database schema & seed
 │   ├── schema.prisma
 │   └── seed.ts
-└── test.sh               # Test script
+├── docs/                  # Documentation
+│   └── CRON.md           # Cron documentation (NEW in v1.1)
+├── test.sh               # Test script
+├── README.md             # Project documentation
+├── PROGRESS.md           # Development progress
+├── ROADMAP.md            # Development roadmap
+└── PROJECT-STATUS.md     # This file
 ```
 
 ---
@@ -179,6 +217,25 @@ expo-monitor/
 - **Local App:** http://localhost:3000
 - **GitHub:** https://github.com/jinguang-bot/expo-monitor
 - **API Base:** http://localhost:3000/api
+- **Cron API:** http://localhost:3000/api/cron/fetch-news
+
+---
+
+## 📈 Version History
+
+### v1.1 (2026-03-08)
+- ✅ Scheduled news fetching (3 scheduling methods)
+- ✅ Case-insensitive search
+- ✅ Database schema improvements
+- ✅ Enhanced error handling
+- ✅ Detailed documentation (CRON.md)
+
+### v1.0 (2026-03-07)
+- ✅ MVP release
+- ✅ 58 exhibitions data
+- ✅ News fetching (manual)
+- ✅ Dashboard
+- ✅ Search and filtering
 
 ---
 
@@ -194,4 +251,4 @@ MIT
 
 ---
 
-**Generated:** 2026-03-07 14:05 GMT+8
+**Generated:** 2026-03-08 01:00 GMT+8

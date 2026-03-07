@@ -5,7 +5,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-6.0-green)](https://www.prisma.io/)
 
-**一站式工业展会情报平台** - 追踪全球58+工业展会，自动抓取最新新闻动态
+**一站式工业展会情报平台 v1.1** - 追踪全球58+工业展会，自动抓取最新新闻动态，自动抓取最新新闻动态
 
 ---
 
@@ -63,6 +63,29 @@ Expo Monitor 是一个工业展会情报聚合平台，帮助用户：
 - ✅ 新闻列表展示（标题、描述、来源、时间）
 - ✅ 新闻与展会关联
 
+### 4. 定时任务功能（v1.1 新增）
+- ✅ 自动定时抓取新闻
+- ✅ API 端点（/api/cron/fetch-news）
+- ✅ 独立脚本（scripts/cron-fetch-news.ts）
+- ✅ 支持 3 种调度方式（系统 cron / API / 外部服务）
+- ✅ 内置速率限制和错误处理
+- ✅ 详细的日志和统计信息
+
+**调度示例：**
+```bash
+# 系统 cron（推荐）
+0 6 * * * cd /home/ubuntu/Projects/expo-monitor && npx tsx scripts/cron-fetch-news.ts
+
+# 手动触发
+curl http://localhost:3000/api/cron/fetch-news
+
+# 抓取所有展会
+npx tsx scripts/cron-fetch-news.ts --all
+```
+
+**详细文档：** 见 docs/CRON.md
+
+### 5. 数据看板
 ### 4. 数据看板
 - ✅ 展会状态分布可视化
 - ✅ 国家分布统计（Top 10）

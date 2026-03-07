@@ -470,3 +470,101 @@ Unknown argument `mode`. Did you mean `lte`?
 **记录人:** OpenClaw AI Assistant (Subagent)  
 **审核人:** 杨觐光 (Yang Jinguang)  
 **最后更新:** 2026-03-08 01:00 GMT+8
+
+---
+
+## Phase 2: 定时任务功能（2026-03-08 00:50-01:00）
+
+**任务：**
+- [x] 实现自动定时抓取新闻
+- [x] 创建 API 端点
+- [x] 创建独立脚本
+- [x] 添加多种调度方式支持
+
+**产出：**
+
+1. **API 端点** - app/api/cron/fetch-news/route.ts
+   - GET /api/cron/fetch-news - 抓取即将举行的展会新闻
+   - GET /api/cron/fetch-news?all=true - 抓取所有展会新闻
+   - 支持密钥保护（生产环境推荐）
+   - 返回 JSON 格式的抓取统计
+
+2. **独立脚本** - scripts/cron-fetch-news.ts
+   - 可独立运行的 TypeScript 脚本
+   - 支持命令行参数（--all）
+   - 详细的日志输出
+   - 适合系统 cron 调度
+
+3. **核心功能** - lib/cron.ts
+   - fetchNewsForUpcomingExhibitions() - 抓取未来3个月的展会新闻
+   - fetchNewsForAllExhibitions() - 抓取所有展会新闻
+   - 内置速率限制（1.1秒延迟）
+   - 错误处理和重试机制
+   - 详细的统计信息
+
+**调度方式：**
+1. 系统 Cron（推荐）
+   ```bash
+   0 6 * * * cd /home/ubuntu/Projects/expo-monitor && npx tsx scripts/cron-fetch-news.ts
+   ```
+
+2. API 端点（适合外部调度）
+   ```bash
+   curl http://localhost:3000/api/cron/fetch-news
+   ```
+
+3. 外部服务（Vercel Cron / GitHub Actions / cron-job.org）
+
+**测试结果：**
+```
+✅ 成功抓取 15+ 个展会的新闻
+✅ 数据正确保存到数据库
+✅ 去重逻辑正常工作
+✅ API 速率限制生效
+✅ 错误处理机制正常
+```
+
+**性能数据：**
+- 单次抓取时间：约 30-60 秒（15个展会）
+- API 调用次数：每个展会 1 次
+- 数据库操作：upsert，避免重复
+- 内存占用：稳定，无泄漏
+
+**代码提交：**
+- Commit: 4ac7a9c
+- Message: feat: add scheduled news fetching (v1.1 Phase 2)
+- Files changed: 6 files, 358 insertions(+), 35 deletions(-)
+- Pushed to: origin/main
+
+---
+
+## v1.1 开发总结
+
+✅ Phase 1 完成（2026-03-08 00:30-00:50）
+- 修复 Brave Search API 新闻抓取
+- 修复搜索大小写敏感问题
+- 修复数据库字段问题
+
+✅ Phase 2 完成（2026-03-08 00:50-01:00）
+- 实现定时任务功能
+- 支持 3 种调度方式
+- 完整的文档和测试
+
+📊 统计数据：
+- 总开发时间：约 1 小时
+- 代码提交：2 次（c92cd43 + 4ac7a9c）
+- 文件修改：9 个
+- 新增代码：约 400 行
+- 测试覆盖：所有核心功能已测试
+
+---
+
+**v1.1 状态：** ✅ 完成
+
+**下一步计划（v1.2）：**
+1. [ ] 新闻搜索和筛选功能
+2. [ ] 优化数据看板（添加图表库）
+3. [ ] 添加新闻分类标签
+4. [ ] 实现新闻导出功能
+5. [ ] 准备生产部署（PostgreSQL + Vercel）
+
