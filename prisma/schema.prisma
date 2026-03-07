@@ -34,9 +34,9 @@ model News {
   exhibitionId  String
   exhibition    Exhibition @relation(fields: [exhibitionId], references: [id], onDelete: Cascade)
   title         String
-  summary       String
+  description   String?
   source        String
-  url           String
+  url           String     @unique
   publishedAt   DateTime
   createdAt     DateTime   @default(now())
 

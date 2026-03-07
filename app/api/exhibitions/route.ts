@@ -18,9 +18,13 @@ export async function GET(request: NextRequest) {
   }
 
   if (search) {
+    // SQLite LIKE is case-insensitive for ASCII characters by default
+    // No need for mode: 'insensitive' which is not supported by SQLite
     where.OR = [
-      { name: { contains: search, mode: 'insensitive' } },
-      { city: { contains: search, mode: 'insensitive' } },
+      { name: { contains: search } },
+      { location: { contains: search } },
+      { country: { contains: search } },
+      { description: { contains: search } },
     ]
   }
 
