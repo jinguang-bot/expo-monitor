@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Exhibition {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  location    String
+  country     String
+  startDate   DateTime
+  endDate     DateTime
+  website     String
+  industry    String   @default("工业")
+  status      String   @default("upcoming") // upcoming, ongoing, ended
+  keywords    String   // JSON array of keywords
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  news        News[]
+
+  @@map("exhibitions")
+}
+
+model News {
+  id            String     @id @default(uuid())
+  exhibitionId  String
+  exhibition    Exhibition @relation(fields: [exhibitionId], references: [id], onDelete: Cascade)
+  title         String
+  summary       String
+  source        String
+  url           String
+  publishedAt   DateTime
+  createdAt     DateTime   @default(now())
+
+  @@map("news")
+}
