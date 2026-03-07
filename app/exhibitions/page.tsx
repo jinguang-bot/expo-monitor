@@ -14,8 +14,8 @@ async function getExhibitions(params: { status?: string; country?: string; searc
   
   if (params.search) {
     where.OR = [
-      { name: { contains: params.search, mode: 'insensitive' } },
-      { location: { contains: params.search, mode: 'insensitive' } },
+      { name: { contains: params.search } },
+      { location: { contains: params.search } },
     ]
   }
   
