@@ -397,3 +397,76 @@ Total lines: 673 (net)
 **记录人:** OpenClaw AI Assistant  
 **审核人:** 杨觐光 (Yang Jinguang)  
 **最后更新:** 2026-03-07 14:30 GMT+8
+
+---
+
+## 🚀 v1.1 开发记录
+
+### 2026-03-08 00:30 - 01:00 | Phase 1: 测试和修复
+
+**任务：**
+- [x] 测试 Brave Search API 新闻抓取功能
+- [x] 修复新闻数据保存问题
+- [x] 修复搜索功能大小写敏感问题
+
+**发现的问题：**
+
+#### 问题 1: News 模型缺少 @unique 约束
+**错误：** 
+```
+Argument `where` of type NewsWhereUniqueInput needs at least one of `id` arguments
+```
+**原因：** Prisma 的 upsert 操作要求 where 子句必须使用 unique 字段或 id，但 `url` 字段没有 @unique 约束
+**修复：** 
+- 在 `prisma/schema.prisma` 中为 `News.url` 添加 `@unique` 约束
+- 创建数据库迁移 `20260307164027_add_unique_url_and_rename_summary`
+
+#### 问题 2: 字段名不匹配
+**错误：** schema 中使用 `summary`，但代码中使用 `description`
+**修复：** 
+- 将 schema 中的 `summary` 字段重命名为 `description`
+- 同时设置为可选字段（`String?`）
+
+#### 问题 3: 搜索功能使用不支持的参数
+**错误：**
+```
+Unknown argument `mode`. Did you mean `lte`?
+```
+**原因：** SQLite 不支持 Prisma 的 `mode: 'insensitive'` 参数
+**修复：** 
+- 移除 `mode: 'insensitive'` 参数
+- SQLite 的 LIKE 操作符默认对 ASCII 字符不区分大小写，满足需求
+- 修复字段名错误（`city` → `location`）
+- 增强搜索功能，支持搜索多个字段（name, location, country, description）
+
+**测试结果：**
+```
+✅ 新闻抓取功能正常工作
+   - 成功抓取 10 条新闻
+   - 数据正确保存到数据库
+   - 支持去重（基于 URL）
+
+✅ 搜索功能大小写不敏感
+   - "Hannover" → 找到结果 ✓
+   - "hannover" → 找到结果 ✓
+   - "HANNOVER" → 找到结果 ✓
+```
+
+**代码提交：**
+- Commit: `c92cd43`
+- Message: "fix: News API and search functionality"
+- Files changed: 3
+
+---
+
+**下一步计划：**
+1. [ ] 测试更多展会的新闻抓取
+2. [ ] 实现自动定时抓取（Phase 2）
+3. [ ] 添加新闻搜索和筛选功能
+4. [ ] 优化新闻去重逻辑
+
+---
+
+**记录人:** OpenClaw AI Assistant (Subagent)  
+**审核人:** 杨觐光 (Yang Jinguang)  
+**最后更新:** 2026-03-08 01:00 GMT+8
