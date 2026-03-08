@@ -1,41 +1,50 @@
 # Expo Monitor - Project Status
 
-**Last Updated:** 2026-03-08 01:00 GMT+8  
-**Version:** v1.1 (News Enhancement)  
+**Last Updated:** 2026-03-08 09:55 GMT+8  
+**Version:** v1.2 Phase 1  
 **Status:** ✅ Fully Functional
 
 ---
 
-## 🎉 Project v1.1 Complete!
+## 🎉 Project v1.2 Phase 1 Complete!
 
-The Expo Monitor v1.1 is now fully functional and includes automatic news fetching capability.
-
----
-
-## ✅ What's New in v1.1
-
-### 🆕 New Features
-
-1. **Scheduled News Fetching** ⭐
-   - API endpoint: `/api/cron/fetch-news`
-   - Standalone script: `scripts/cron-fetch-news.ts`
-   - Support for 3 scheduling methods (System cron / API / External services)
-   - Built-in rate limiting (1.1s delay)
-   - Detailed logging and statistics
-
-2. **Enhanced Search** 
-   - Case-insensitive search (fixed)
-   - Multi-field search (name, location, country, description)
-   - Improved accuracy
-
-3. **Database Improvements**
-   - Added unique constraint on `News.url`
-   - Renamed `summary` to `description`
-   - Better error handling
+The Expo Monitor v1.2 Phase 1 is now complete with news search and filtering capability.
 
 ---
 
-## ✅ What's Been Built (v1.0)
+## ✅ What's New in v1.2 Phase 1
+
+### 🆕 News Search and Filtering ⭐
+
+1. **Dedicated News Page** (`/news`)
+   - Search news by title, description, or exhibition name
+   - Filter by exhibition (dropdown with 58 exhibitions)
+   - Filter by time range (today, last 7 days, last 30 days, all time)
+   - Card-based layout with hover effects
+   - Responsive design for all devices
+   - Empty state with helpful prompts
+
+2. **Enhanced Navigation**
+   - Added "新闻列表" link to main navigation
+   - Navigation order: Home → Exhibitions → News → Dashboard
+
+3. **Search Features**
+   - Case-insensitive search
+   - Multi-field search (title + description + exhibition name)
+   - Date range filtering
+   - Exhibition filtering
+   - Combined filtering support
+   - Results limited to 100 items for performance
+
+4. **Bug Fixes**
+   - Fixed TypeScript errors in API routes
+   - Fixed source field extraction from URLs
+   - Fixed field naming inconsistencies
+   - Added missing dependencies (tailwind-merge, clsx)
+
+---
+
+## ✅ What's Been Built (v1.0-v1.1)
 
 ### Frontend Pages
 1. **Home Page** (`/`)
@@ -45,7 +54,7 @@ The Expo Monitor v1.1 is now fully functional and includes automatic news fetchi
 
 2. **Exhibitions List** (`/exhibitions`)
    - 58 exhibitions from around the world
-   - Search functionality (case-insensitive ✅)
+   - Search functionality (case-insensitive)
    - Filter by status (upcoming/ongoing/ended)
    - Filter by country
    - Responsive grid layout
@@ -56,8 +65,15 @@ The Expo Monitor v1.1 is now fully functional and includes automatic news fetchi
    - "Fetch Latest News" button for Brave Search integration
    - Keywords/tags display
 
-4. **Dashboard** (`/dashboard`)
-   - Data visualization (no external chart library needed)
+4. **News List** (`/news`) ⭐ NEW in v1.2
+   - Search news by title/description/exhibition
+   - Filter by exhibition
+   - Filter by time range
+   - Card-based layout
+   - Links to original articles
+
+5. **Dashboard** (`/dashboard`)
+   - Data visualization
    - Exhibition status distribution
    - Country distribution (top 10)
    - News count by exhibition
@@ -68,7 +84,7 @@ The Expo Monitor v1.1 is now fully functional and includes automatic news fetchi
 2. **GET /api/exhibitions/[id]** - Get single exhibition
 3. **GET /api/news** - List news articles
 4. **POST /api/news/fetch** - Fetch news via Brave Search API
-5. **GET /api/cron/fetch-news** - Scheduled news fetching ⭐ NEW
+5. **GET /api/cron/fetch-news** - Scheduled news fetching
 
 ### Database
 - **SQLite** database with Prisma ORM
@@ -101,11 +117,13 @@ The Expo Monitor v1.1 is now fully functional and includes automatic news fetchi
 ```
 ✅ Home page - 200 OK
 ✅ Exhibitions page - 200 OK
+✅ News page - 200 OK ⭐ NEW
 ✅ Dashboard page - 200 OK
 ✅ API endpoints - 200 OK
 ✅ Search functionality - 200 OK (case-insensitive)
 ✅ News fetching - 200 OK (tested with 15+ exhibitions)
 ✅ Scheduled fetching - 200 OK (tested with cron script)
+✅ Build - 200 OK (all routes working)
 ```
 
 All tests passing!
@@ -124,27 +142,29 @@ All tests passing!
 
 ---
 
-## 📝 Next Steps (v1.2)
+## 📝 Next Steps (v1.2 Phase 2)
 
-1. **News Enhancement**
-   - Add news search and filtering
-   - Implement news categorization
-   - Add export functionality (CSV/Excel)
+1. **News Categorization**
+   - Add category field to News model
+   - Auto-categorize news (product launch, industry news, etc.)
+   - Display category tags in news list
+   - Filter by category
 
 2. **Data Visualization**
    - Add Recharts or Chart.js
-   - Interactive charts
-   - Date range filters
+   - News trend chart (by time)
+   - Exhibition activity ranking
+   - Category distribution chart
 
-3. **Production Deployment**
+3. **Export Functionality**
+   - Export exhibitions (CSV)
+   - Export news (CSV)
+   - Filter before export
+
+4. **Production Deployment**
    - Docker configuration
    - PostgreSQL database
    - Vercel deployment
-
-4. **User Features**
-   - Add user authentication
-   - Save favorite exhibitions
-   - Email notifications
 
 ---
 
@@ -181,10 +201,11 @@ npx tsx scripts/cron-fetch-news.ts
 expo-monitor/
 ├── app/                    # Next.js 15 App Router
 │   ├── api/               # API routes
-│   │   ├── cron/          # Cron API (NEW in v1.1)
+│   │   ├── cron/          # Cron API
 │   │   ├── exhibitions/   # Exhibition APIs
 │   │   └── news/          # News APIs
 │   ├── exhibitions/       # Exhibition pages
+│   ├── news/              # News page ⭐ NEW
 │   ├── dashboard/         # Dashboard page
 │   ├── layout.tsx         # Root layout
 │   ├── page.tsx           # Home page
@@ -194,18 +215,19 @@ expo-monitor/
 ├── lib/                   # Utility libraries
 │   ├── prisma.ts         # Prisma client
 │   ├── brave-search.ts   # Brave Search API
-│   ├── cron.ts           # Cron utilities (NEW in v1.1)
+│   ├── cron.ts           # Cron utilities
 │   └── utils.ts          # Helper functions
-├── scripts/               # Scripts (NEW in v1.1)
+├── scripts/               # Scripts
 │   └── cron-fetch-news.ts # Cron job script
 ├── prisma/               # Database schema & seed
 │   ├── schema.prisma
 │   └── seed.ts
 ├── docs/                  # Documentation
-│   └── CRON.md           # Cron documentation (NEW in v1.1)
+│   └── CRON.md           # Cron documentation
 ├── test.sh               # Test script
 ├── README.md             # Project documentation
 ├── PROGRESS.md           # Development progress
+├── PROGRESS-v1.2.md      # v1.2 progress ⭐ NEW
 ├── ROADMAP.md            # Development roadmap
 └── PROJECT-STATUS.md     # This file
 ```
@@ -217,11 +239,20 @@ expo-monitor/
 - **Local App:** http://localhost:3000
 - **GitHub:** https://github.com/jinguang-bot/expo-monitor
 - **API Base:** http://localhost:3000/api
+- **News Page:** http://localhost:3000/news ⭐ NEW
 - **Cron API:** http://localhost:3000/api/cron/fetch-news
 
 ---
 
 ## 📈 Version History
+
+### v1.2 Phase 1 (2026-03-08)
+- ✅ News search and filtering
+- ✅ Multi-field search (title + description + exhibition)
+- ✅ Time range filtering
+- ✅ Exhibition filtering
+- ✅ Updated navigation
+- ✅ Bug fixes and improvements
 
 ### v1.1 (2026-03-08)
 - ✅ Scheduled news fetching (3 scheduling methods)
@@ -251,4 +282,4 @@ MIT
 
 ---
 
-**Generated:** 2026-03-08 01:00 GMT+8
+**Generated:** 2026-03-08 09:55 GMT+8

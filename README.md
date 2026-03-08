@@ -1,527 +1,358 @@
-# Expo Monitor - 全球工业展会监控平台
+# Expo Monitor - 全球展会监控系统
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Next.js](https://img.shields.io/badge/Next.js-15.5-black)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
-[![Prisma](https://img.shields.io/badge/Prisma-6.0-green)](https://www.prisma.io/)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/jinguang-bot/expo-monitor)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-**一站式工业展会情报平台 v1.1** - 追踪全球58+工业展会，自动抓取最新新闻动态，自动抓取最新新闻动态
+> 监控全球工业展会，追踪相关新闻动态，AI驱动的展会情报分析平台
 
----
-
-## 📖 目录
-
-- [项目简介](#项目简介)
-- [核心功能](#核心功能)
-- [技术栈](#技术栈)
-- [快速开始](#快速开始)
-- [项目结构](#项目结构)
-- [数据库设计](#数据库设计)
-- [API 文档](#api-文档)
-- [部署指南](#部署指南)
-- [开发进度](#开发进度)
-- [未来规划](#未来规划)
-- [贡献指南](#贡献指南)
-- [许可证](#许可证)
+**在线演示：** http://localhost:3000  
+**GitHub：** https://github.com/jinguang-bot/expo-monitor
 
 ---
 
-## 项目简介
+## ✨ 核心功能
 
-Expo Monitor 是一个工业展会情报聚合平台，帮助用户：
+### 🎯 展会管理
+- **58个全球工业展会** - 覆盖中国、德国、美国、日本等12个国家
+- **智能搜索** - 按名称、地点、国家搜索（大小写不敏感）
+- **多维筛选** - 按状态（即将开始/进行中/已结束）、国家筛选
+- **详情页** - 完整的展会信息、相关新闻、关键词标签
 
-- 📅 **追踪全球工业展会** - 涵盖中国、德国、美国、日本等主要工业国家的58+展会
-- 🔍 **搜索和筛选** - 按状态、国家、行业快速定位目标展会
-- 📰 **自动新闻抓取** - 通过 Brave Search API 自动抓取展会相关新闻
-- 📊 **数据分析** - 可视化展会分布、状态统计、新闻热度
+### 📰 新闻聚合 ⭐ NEW in v1.2
+- **新闻搜索** - 按标题、描述、展会名称搜索
+- **展会筛选** - 按特定展会筛选相关新闻
+- **时间筛选** - 今天、最近7天、最近30天、全部时间
+- **智能抓取** - 自动从 Brave Search API 获取最新新闻
+- **定时任务** - 每日自动抓取即将举行的展会新闻
 
-**适用场景：**
-- 企业参展决策
-- 市场趋势分析
-- 竞品监测
-- 行业新闻聚合
+### 📊 数据看板
+- **展会状态分布** - 可视化展示各状态数量
+- **国家分布** - Top 10 国家展会数量
+- **新闻统计** - 按展会统计新闻数量
+- **关键指标** - 总展会数、总新闻数、即将开始数、进行中数
 
----
-
-## 核心功能
-
-### 1. 展会管理
-- ✅ 58个工业展会数据（持续更新）
-- ✅ 展会详情页（时间、地点、行业、官网）
-- ✅ 状态追踪（即将开始、进行中、已结束）
-- ✅ 国家和行业分类
-
-### 2. 搜索与筛选
-- ✅ 关键词搜索（展会名称、地点）
-- ✅ 状态筛选（upcoming/ongoing/ended）
-- ✅ 国家筛选
-- ✅ 实时搜索结果
-
-### 3. 新闻聚合
-- ✅ Brave Search API 集成
-- ✅ 自动抓取展会相关新闻
-- ✅ 新闻列表展示（标题、描述、来源、时间）
-- ✅ 新闻与展会关联
-
-### 4. 定时任务功能（v1.1 新增）
-- ✅ 自动定时抓取新闻
-- ✅ API 端点（/api/cron/fetch-news）
-- ✅ 独立脚本（scripts/cron-fetch-news.ts）
-- ✅ 支持 3 种调度方式（系统 cron / API / 外部服务）
-- ✅ 内置速率限制和错误处理
-- ✅ 详细的日志和统计信息
-
-**调度示例：**
-```bash
-# 系统 cron（推荐）
-0 6 * * * cd /home/ubuntu/Projects/expo-monitor && npx tsx scripts/cron-fetch-news.ts
-
-# 手动触发
-curl http://localhost:3000/api/cron/fetch-news
-
-# 抓取所有展会
-npx tsx scripts/cron-fetch-news.ts --all
-```
-
-**详细文档：** 见 docs/CRON.md
-
-### 5. 数据看板
-### 4. 数据看板
-- ✅ 展会状态分布可视化
-- ✅ 国家分布统计（Top 10）
-- ✅ 新闻数量统计
-- ✅ 关键指标卡片
-
-### 5. 响应式设计
-- ✅ 移动端适配
-- ✅ 桌面端优化
-- ✅ 快速加载速度
+### 🤖 自动化功能
+- **定时抓取** - 每日自动抓取新闻（支持系统 cron / API / 外部服务）
+- **智能限流** - API 调用限速保护（1.1秒间隔）
+- **去重机制** - URL 唯一约束，避免重复新闻
+- **错误处理** - 完整的错误捕获和日志记录
 
 ---
 
-## 技术栈
+## 🚀 快速开始
 
-### 前端
-- **框架:** Next.js 15.5 (App Router)
-- **UI库:** React 19
-- **语言:** TypeScript 5.0
-- **样式:** Tailwind CSS 3.4
-- **组件:** 自定义 UI 组件库
-
-### 后端
-- **数据库:** SQLite
-- **ORM:** Prisma 6.0
-- **API:** Next.js API Routes (Serverless Functions)
-
-### 第三方服务
-- **搜索:** Brave Search API
-- **部署:** Vercel (推荐) / Docker
-
----
-
-## 快速开始
-
-### 前置要求
-
-- Node.js 18+ 
-- npm 或 pnpm
-- Git
-
-### 安装步骤
-
-1. **克隆仓库**
+### 1. 克隆项目
 ```bash
 git clone https://github.com/jinguang-bot/expo-monitor.git
 cd expo-monitor
 ```
 
-2. **安装依赖**
+### 2. 安装依赖
 ```bash
 npm install
 ```
 
-3. **配置环境变量**
+### 3. 配置环境变量
 ```bash
-# 复制环境变量模板
 cp .env.example .env
-
-# 编辑 .env 文件，添加以下内容：
-DATABASE_URL="file:./prisma/dev.db"
-BRAVE_API_KEY="your-brave-api-key-here"
 ```
 
-4. **初始化数据库**
+编辑 `.env` 文件：
+```env
+# Database
+DATABASE_URL="file:./prisma/dev.db"
+
+# Brave Search API (获取: https://brave.com/search/api/)
+BRAVE_API_KEY="your-api-key-here"
+```
+
+### 4. 初始化数据库
 ```bash
-# 生成 Prisma Client
 npx prisma generate
-
-# 运行数据库迁移
-npx prisma migrate dev
-
-# 填充示例数据
+npx prisma migrate deploy
 npx prisma db seed
 ```
 
-5. **启动开发服务器**
+### 5. 启动开发服务器
 ```bash
 npm run dev
 ```
 
-6. **访问应用**
-打开浏览器访问: http://localhost:3000
+访问：http://localhost:3000
 
-### 可用脚本
+---
 
+## 📖 功能指南
+
+### 新闻搜索 (v1.2 新功能) ⭐
+
+**访问路径：** `/news`
+
+**搜索功能：**
+1. **关键词搜索** - 输入关键词，搜索标题、描述、展会名称
+2. **展会筛选** - 从下拉列表选择特定展会
+3. **时间筛选** - 选择今天、最近7天、最近30天或全部
+4. **组合筛选** - 可以同时使用多种筛选条件
+
+**示例场景：**
+- 查看"汉诺威工业展"的最新新闻
+- 搜索最近7天的"机器人"相关新闻
+- 查看今天抓取的所有新闻
+
+### 展会搜索
+
+**访问路径：** `/exhibitions`
+
+**搜索技巧：**
+- 输入展会名称、地点或国家
+- 搜索不区分大小写
+- 支持中英文搜索
+
+### 新闻抓取
+
+**手动抓取：**
+1. 进入展会详情页
+2. 点击"Fetch Latest News"按钮
+3. 系统自动调用 Brave Search API
+4. 新闻保存到数据库并显示
+
+**自动抓取：**
 ```bash
-# 开发模式
-npm run dev
+# 抓取即将举行的展会新闻（未来3个月）
+npx tsx scripts/cron-fetch-news.ts
 
-# 生产构建
-npm run build
+# 抓取所有展会新闻
+npx tsx scripts/cron-fetch-news.ts --all
+```
 
-# 启动生产服务器
-npm start
+**定时任务设置：**
+```bash
+# 系统 Cron（推荐）
+0 6 * * * cd /home/ubuntu/Projects/expo-monitor && npx tsx scripts/cron-fetch-news.ts
 
-# 数据库操作
-npx prisma studio        # 打开数据库可视化界面
-npx prisma migrate dev   # 创建新迁移
-npx prisma db seed       # 填充示例数据
-
-# 测试
-./test.sh                # 运行测试套件
+# 或通过 API 调用
+curl http://localhost:3000/api/cron/fetch-news
 ```
 
 ---
 
-## 项目结构
+## 🛠️ 技术栈
+
+- **框架：** Next.js 15 (App Router)
+- **语言：** TypeScript
+- **前端：** React 19
+- **样式：** Tailwind CSS
+- **数据库：** SQLite (Prisma ORM)
+- **API：** Brave Search API
+- **部署：** Vercel / Docker
+
+---
+
+## 📁 项目结构
 
 ```
 expo-monitor/
-├── app/                          # Next.js 15 App Router
-│   ├── api/                      # API 路由
-│   │   ├── exhibitions/          # 展会 API
-│   │   │   ├── route.ts         # GET 所有展会
-│   │   │   └── [id]/route.ts    # GET 单个展会
-│   │   └── news/                 # 新闻 API
-│   │       ├── route.ts         # GET 所有新闻
-│   │       └── fetch/route.ts   # POST 抓取新闻
-│   ├── exhibitions/              # 展会页面
-│   │   ├── page.tsx             # 展会列表
-│   │   └── [id]/page.tsx        # 展会详情
-│   ├── dashboard/                # 数据看板
-│   │   └── page.tsx
-│   ├── layout.tsx                # 根布局
-│   ├── page.tsx                  # 首页
-│   └── globals.css               # 全局样式
-├── components/                   # React 组件
-│   └── ui/                       # UI 组件
-│       └── button.tsx
-├── lib/                          # 工具库
-│   ├── prisma.ts                # Prisma 客户端
-│   ├── brave-search.ts          # Brave Search API
-│   └── utils.ts                 # 工具函数
-├── prisma/                       # 数据库
-│   ├── schema.prisma            # 数据库模型
-│   ├── seed.ts                  # 示例数据
-│   └── dev.db                   # SQLite 数据库
-├── .env.example                  # 环境变量模板
-├── PROJECT-STATUS.md             # 项目状态
-├── PROGRESS.md                   # 开发进度
-├── ROADMAP.md                    # 开发路线图
-├── test.sh                       # 测试脚本
-└── README.md                     # 项目文档
+├── app/                    # Next.js App Router
+│   ├── api/               # API 路由
+│   │   ├── cron/          # 定时任务 API
+│   │   ├── exhibitions/   # 展会 API
+│   │   └── news/          # 新闻 API
+│   ├── exhibitions/       # 展会页面
+│   ├── news/              # 新闻页面 ⭐ v1.2
+│   ├── dashboard/         # 数据看板
+│   ├── layout.tsx         # 根布局
+│   ├── page.tsx           # 首页
+│   └── globals.css        # 全局样式
+├── components/            # React 组件
+│   └── ui/               # UI 组件库
+├── lib/                   # 工具库
+│   ├── prisma.ts         # Prisma 客户端
+│   ├── brave-search.ts   # Brave Search API
+│   ├── cron.ts           # 定时任务工具
+│   └── utils.ts          # 辅助函数
+├── scripts/               # 脚本
+│   └── cron-fetch-news.ts # Cron 脚本
+├── prisma/               # 数据库
+│   ├── schema.prisma     # 数据模型
+│   └── seed.ts           # 示例数据
+└── docs/                  # 文档
+    └── CRON.md           # 定时任务文档
 ```
 
 ---
 
-## 数据库设计
+## 📊 数据模型
 
-### 展会表 (Exhibition)
-
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| id | String | UUID 主键 |
-| name | String | 展会名称 |
-| startDate | DateTime | 开始日期 |
-| endDate | DateTime | 结束日期 |
-| location | String | 举办地点 |
-| country | String | 国家 |
-| industry | String? | 所属行业 |
-| website | String? | 官网链接 |
-| description | String? | 展会描述 |
-| status | String | 状态 (upcoming/ongoing/ended) |
-| keywords | String? | 关键词 JSON 数组 |
-| createdAt | DateTime | 创建时间 |
-| updatedAt | DateTime | 更新时间 |
-
-### 新闻表 (News)
-
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| id | String | UUID 主键 |
-| exhibitionId | String | 关联展会 ID |
-| title | String | 新闻标题 |
-| url | String | 新闻链接 |
-| description | String? | 新闻描述 |
-| source | String? | 来源 |
-| publishedAt | DateTime | 发布时间 |
-| createdAt | DateTime | 创建时间 |
-
-**关系：** 一个展会可以有多条新闻 (一对多)
-
----
-
-## API 文档
-
-### 展会 API
-
-#### GET /api/exhibitions
-获取所有展会列表
-
-**查询参数：**
-- `status` (可选): 筛选状态 (upcoming/ongoing/ended)
-- `country` (可选): 筛选国家
-- `search` (可选): 搜索关键词
-
-**响应示例：**
-```json
-[
-  {
-    "id": "clx...",
-    "name": "印度国际机床展 (IMTEX)",
-    "country": "印度",
-    "status": "upcoming",
-    "startDate": "2026-01-20",
-    "endDate": "2026-01-26"
-  }
-]
-```
-
-#### GET /api/exhibitions/:id
-获取单个展会详情
-
-**响应示例：**
-```json
+### Exhibition (展会)
+```typescript
 {
-  "id": "clx...",
-  "name": "印度国际机床展 (IMTEX)",
-  "country": "印度",
-  "location": "班加罗尔国际展览中心",
-  "startDate": "2026-01-20",
-  "endDate": "2026-01-26",
-  "industry": "工业",
-  "website": "https://imtex.in",
-  "news": [...]
+  id: string
+  name: string              // 展会名称
+  description: string       // 描述
+  location: string          // 地点
+  country: string           // 国家
+  startDate: DateTime       // 开始日期
+  endDate: DateTime         // 结束日期
+  website: string           // 官网
+  industry: string          // 行业
+  status: string            // upcoming/ongoing/ended
+  keywords: string          // 关键词 (JSON)
+  news: News[]              // 相关新闻
 }
 ```
 
-### 新闻 API
-
-#### GET /api/news
-获取所有新闻列表
-
-**查询参数：**
-- `exhibitionId` (可选): 筛选展会
-- `limit` (可选): 返回数量（默认50）
-
-#### POST /api/news/fetch
-为指定展会抓取最新新闻
-
-**请求体：**
-```json
+### News (新闻)
+```typescript
 {
-  "exhibitionId": "clx..."
-}
-```
-
-**响应示例：**
-```json
-{
-  "success": true,
-  "count": 10,
-  "news": [...]
+  id: string
+  exhibitionId: string      // 关联展会
+  title: string             // 标题
+  description: string       // 描述
+  url: string               // 原文链接 (唯一)
+  source: string            // 来源
+  publishedAt: DateTime     // 发布时间
+  exhibition: Exhibition    // 关联展会
 }
 ```
 
 ---
 
-## 部署指南
+## 🧪 测试
 
-### Vercel 部署（推荐）
-
-1. **推送代码到 GitHub**
-2. **连接 Vercel**
-   - 访问 [vercel.com](https://vercel.com)
-   - 导入 GitHub 仓库
-3. **配置环境变量**
-   - 在 Vercel 项目设置中添加：
-     - `DATABASE_URL`
-     - `BRAVE_API_KEY`
-4. **部署**
-   - Vercel 自动检测 Next.js 并部署
-
-### Docker 部署
-
-```dockerfile
-# Dockerfile
-FROM node:18-alpine
-
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm ci
-
-COPY . .
-RUN npx prisma generate
-RUN npm run build
-
-EXPOSE 3000
-
-CMD ["npm", "start"]
-```
-
+### 运行测试
 ```bash
-# 构建镜像
-docker build -t expo-monitor .
-
-# 运行容器
-docker run -p 3000:3000 \
-  -e DATABASE_URL="file:./prisma/prod.db" \
-  -e BRAVE_API_KEY="your-key" \
-  expo-monitor
+./test.sh
 ```
 
-### 生产环境配置
+### 手动测试
+```bash
+# 测试首页
+curl http://localhost:3000
 
-1. **使用 PostgreSQL**
-   - 修改 `prisma/schema.prisma`:
-     ```prisma
-     datasource db {
-       provider = "postgresql"
-       url      = env("DATABASE_URL")
-     }
-     ```
-   - 更新 `.env`:
-     ```
-     DATABASE_URL="postgresql://user:pass@host:5432/expo_monitor"
-     ```
+# 测试展会 API
+curl http://localhost:3000/api/exhibitions
 
-2. **添加认证**
-   - 集成 NextAuth.js
-   - 保护 API 路由
+# 测试新闻 API
+curl http://localhost:3000/api/news
 
-3. **性能优化**
-   - 启用 ISR (Incremental Static Regeneration)
-   - 添加缓存层
-   - 使用 CDN
+# 测试新闻搜索
+curl "http://localhost:3000/news?search=robot&timeRange=week"
+
+# 测试定时任务
+npx tsx scripts/cron-fetch-news.ts
+```
 
 ---
 
-## 开发进度
+## 🔧 常用命令
 
-详见 [PROGRESS.md](./PROGRESS.md)
+### 开发
+```bash
+npm run dev              # 启动开发服务器
+npm run build            # 构建生产版本
+npm start                # 启动生产服务器
+```
 
-**已完成功能：**
-- ✅ 项目初始化（2026-03-07 13:20）
-- ✅ 数据库设计和建模（2026-03-07 13:30）
-- ✅ 示例数据填充（2026-03-07 13:40）
-- ✅ API 路由开发（2026-03-07 13:50）
-- ✅ 前端页面开发（2026-03-07 14:00）
-- ✅ 测试和修复（2026-03-07 14:10）
-- ✅ 文档编写（2026-03-07 14:20）
+### 数据库
+```bash
+npx prisma studio        # 打开数据库 GUI
+npx prisma migrate dev   # 创建迁移
+npx prisma db seed       # 填充数据
+npx prisma db reset      # 重置数据库
+```
 
----
+### 定时任务
+```bash
+# 抓取即将举行的展会新闻
+npx tsx scripts/cron-fetch-news.ts
 
-## 未来规划
+# 抓取所有展会新闻
+npx tsx scripts/cron-fetch-news.ts --all
 
-详见 [ROADMAP.md](./ROADMAP.md)
-
-**v1.1 - 新闻增强（计划：2026-03-15）**
-- [ ] 自动定时抓取新闻
-- [ ] 新闻搜索和筛选
-- [ ] 新闻分类标签
-
-**v1.2 - 数据分析（计划：2026-04-01）**
-- [ ] 趋势分析图表
-- [ ] 展会对比功能
-- [ ] 数据导出（CSV/Excel）
-
-**v2.0 - 企业版（计划：2026-06-01）**
-- [ ] 用户认证系统
-- [ ] 多语言支持
-- [ ] 付费订阅功能
+# 通过 API 抓取
+curl http://localhost:3000/api/cron/fetch-news
+```
 
 ---
 
-## 贡献指南
+## 📈 版本历史
 
-欢迎贡献代码！请遵循以下步骤：
+### v1.2 (2026-03-08) - 新闻搜索和筛选
+- ✅ 新闻搜索功能（标题、描述、展会名称）
+- ✅ 展会筛选（下拉选择）
+- ✅ 时间筛选（今天、最近7天、最近30天）
+- ✅ 更新导航栏
+- ✅ Bug 修复和性能优化
 
-1. Fork 本仓库
-2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
+### v1.1 (2026-03-08) - 定时任务
+- ✅ 自动定时抓取新闻
+- ✅ 3种调度方式支持
+- ✅ 大小写不敏感搜索
+- ✅ 完整文档 (CRON.md)
+
+### v1.0 (2026-03-07) - MVP 发布
+- ✅ 58个全球工业展会
+- ✅ 展会搜索和筛选
+- ✅ 手动新闻抓取
+- ✅ 数据看板
+- ✅ Brave Search API 集成
+
+---
+
+## 🗺️ 路线图
+
+### v1.3 - 新闻分类和导出
+- [ ] 新闻自动分类（产品发布、行业动态、技术趋势）
+- [ ] 按分类筛选
+- [ ] 导出展会列表 (CSV)
+- [ ] 导出新闻列表 (CSV)
+
+### v1.4 - 数据可视化
+- [ ] 集成 Recharts 图表库
+- [ ] 新闻趋势图（按时间）
+- [ ] 展会活跃度排名
+- [ ] 分类分布图
+
+### v2.0 - 生产部署
+- [ ] Docker 容器化
+- [ ] PostgreSQL 数据库
+- [ ] Vercel 部署
+- [ ] 用户认证
+- [ ] 邮件通知
+
+---
+
+## 🤝 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+1. Fork 项目
+2. 创建功能分支 (`git checkout -b feature/amazing-feature`)
+3. 提交更改 (`git commit -m 'Add some amazing feature'`)
+4. 推送到分支 (`git push origin feature/amazing-feature`)
 5. 创建 Pull Request
 
-**代码规范：**
-- 使用 TypeScript
-- 遵循 ESLint 规则
-- 添加必要注释
-- 编写单元测试
+---
+
+## 📄 License
+
+MIT License - 详见 [LICENSE](LICENSE) 文件
 
 ---
 
-## 常见问题
+## 👤 作者
 
-### 1. 如何获取 Brave Search API Key？
-
-访问 [brave.com/search/api](https://brave.com/search/api) 注册并获取 API Key
-
-### 2. 数据库文件在哪里？
-
-SQLite 数据库文件位于 `prisma/dev.db`
-
-### 3. 如何添加新展会？
-
-运行 Prisma Studio:
-```bash
-npx prisma studio
-```
-在可视化界面中添加数据
-
-### 4. 如何更新所有依赖？
-
-```bash
-npx npm-check-updates -u
-npm install
-```
+**OpenClaw AI Assistant** with guidance from 杨觐光 (Yang Jinguang)
 
 ---
 
-## 许可证
-
-本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件
-
----
-
-## 联系方式
-
-- **作者:** 杨觐光 (Yang Jinguang)
-- **GitHub:** [@jinguang-bot](https://github.com/jinguang-bot)
-- **项目地址:** https://github.com/jinguang-bot/expo-monitor
-
----
-
-## 致谢
+## 🙏 致谢
 
 - [Next.js](https://nextjs.org/) - React 框架
 - [Prisma](https://www.prisma.io/) - 数据库 ORM
-- [Tailwind CSS](https://tailwindcss.com/) - CSS 框架
-- [Brave Search](https://brave.com/search/) - 搜索 API
-- [OpenClaw](https://openclaw.ai/) - AI 开发助手
+- [Brave Search API](https://brave.com/search/api/) - 新闻搜索
+- [Tailwind CSS](https://tailwindcss.com/) - UI 框架
 
 ---
 
-**最后更新:** 2026-03-07 14:20 GMT+8  
-**版本:** MVP v1.0  
-**状态:** ✅ 生产就绪
+**最后更新：** 2026-03-08 09:55 GMT+8
