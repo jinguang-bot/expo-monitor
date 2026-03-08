@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { searchNews } from '@/lib/brave-search'
+import { categorizeNews } from '@/lib/categorize-news'
 
 function extractDomain(url: string): string {
   try {
@@ -40,6 +41,7 @@ export async function POST(request: NextRequest) {
         if (!item.url || item.url.length < 10) continue
         
         const source = extractDomain(item.url)
+        const category = categorizeNews(item.title, item.description || '')
         
         const news = await prisma.news.upsert({
           where: { url: item.url },
