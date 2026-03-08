@@ -6,6 +6,7 @@ async function getNews(params: {
   exhibitionId?: string
   startDate?: string
   endDate?: string 
+  category?: string
 }) {
   const where: any = {}
   
@@ -19,6 +20,10 @@ async function getNews(params: {
   
   if (params.exhibitionId && params.exhibitionId !== 'all') {
     where.exhibitionId = params.exhibitionId
+  }
+  
+  if (params.category && params.category !== 'all') {
+    where.category = params.category
   }
   
   if (params.startDate) {
@@ -52,6 +57,14 @@ async function getExhibitions() {
   })
 }
 
+async function getCategories() {
+  const news = await prisma.news.findMany({
+    select: { category: true },
+    distinct: ['category']
+  })
+  return news.map(n => n.category).filter(Boolean).sort()
+}
+
 function getTimeRange(range: string | undefined): { startDate?: string; endDate?: string } {
   if (!range || range === 'all') return {}
   
@@ -74,6 +87,13 @@ function getTimeRange(range: string | undefined): { startDate?: string; endDate?
   }
 }
 
+const CATEGORY_LABELS: Record<string, string> = {
+  '产品发布': '🚀 产品发布',
+  '行业动态': '📰 行业动态',
+  '技术趋势': '💡 技术趋势',
+  '市场分析': '📊 市场分析',
+}
+
 export default async function NewsPage({
   searchParams,
 }: {
@@ -81,6 +101,7 @@ export default async function NewsPage({
     search?: string
     exhibitionId?: string
     timeRange?: string
+    category?: string
     startDate?: string
     endDate?: string
   }>
@@ -91,13 +112,15 @@ export default async function NewsPage({
   const queryParams = {
     search: params.search,
     exhibitionId: params.exhibitionId,
+    category: params.category,
     startDate: params.startDate || timeRange.startDate,
     endDate: params.endDate || timeRange.endDate,
   }
   
-  const [news, exhibitions] = await Promise.all([
+  const [news, exhibitions, categories] = await Promise.all([
     getNews(queryParams),
     getExhibitions(),
+    getCategories(),
   ])
 
   return (
@@ -123,6 +146,19 @@ export default async function NewsPage({
             {exhibitions.map((exhibition) => (
               <option key={exhibition.id} value={exhibition.id}>
                 {exhibition.name} ({exhibition.country})
+              </option>
+            ))}
+          </select>
+          
+          <select
+            name="category"
+            defaultValue={params.category || 'all'}
+            className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="all">全部分类</option>
+            {categories.map((category) => (
+              <option key={category!} value={category!}>
+                {CATEGORY_LABELS[category!] || category}
               </option>
             ))}
           </select>
@@ -176,7 +212,7 @@ export default async function NewsPage({
             )}
             
             <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 {item.exhibition && (
                   <Link 
                     href={`/exhibitions/${item.exhibition.id}`}
@@ -185,6 +221,14 @@ export default async function NewsPage({
                   >
                     {item.exhibition.name}
                   </Link>
+                )}
+                {item.category && (
+                  <>
+                    <span className="text-gray-300">·</span>
+                    <span className="px-2 py-1 bg-gray-100 rounded text-xs text-gray-600">
+                      {CATEGORY_LABELS[item.category] || item.category}
+                    </span>
+                  </>
                 )}
                 <span className="text-gray-300">·</span>
                 <span className="text-gray-400">External Link →</span>

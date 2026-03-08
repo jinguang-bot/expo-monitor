@@ -11,10 +11,6 @@ function extractDomain(url: string): string {
   }
 }
 
-/**
- * Fetch news for all exhibitions
- * This function can be called by a cron job or manually
- */
 export async function fetchNewsForAllExhibitions() {
   console.log('Starting news fetch for all exhibitions...')
   
@@ -29,14 +25,11 @@ export async function fetchNewsForAllExhibitions() {
 
   for (const exhibition of exhibitions) {
     try {
-      // Search for news using Brave Search API
       const searchQuery = `${exhibition.name} ${exhibition.industry || ''} 2026`.trim()
       const searchResults = await searchNews(searchQuery)
 
-      // Save news to database
       for (const item of searchResults) {
         try {
-          // Skip if URL is empty or invalid
           if (!item.url || item.url.length < 10) continue
           
           const source = extractDomain(item.url)
@@ -48,6 +41,7 @@ export async function fetchNewsForAllExhibitions() {
               title: item.title,
               description: item.description || '',
               source: source,
+              category: category,
               publishedAt: item.published ? new Date(item.published) : new Date(),
             },
             create: {
@@ -56,6 +50,7 @@ export async function fetchNewsForAllExhibitions() {
               url: item.url,
               description: item.description || '',
               source: source,
+              category: category,
               publishedAt: item.published ? new Date(item.published) : new Date(),
             }
           })
@@ -66,8 +61,6 @@ export async function fetchNewsForAllExhibitions() {
       }
 
       console.log(`✓ Fetched news for ${exhibition.name}`)
-      
-      // Rate limiting: wait 1.1 seconds between requests
       await new Promise(resolve => setTimeout(resolve, 1100))
     } catch (error) {
       console.error(`✗ Failed to fetch news for ${exhibition.name}:`, error)
@@ -82,9 +75,6 @@ export async function fetchNewsForAllExhibitions() {
   return { totalNews, errors }
 }
 
-/**
- * Fetch news for upcoming exhibitions (next 3 months)
- */
 export async function fetchNewsForUpcomingExhibitions() {
   console.log('Starting news fetch for upcoming exhibitions...')
   
@@ -109,14 +99,11 @@ export async function fetchNewsForUpcomingExhibitions() {
 
   for (const exhibition of upcomingExhibitions) {
     try {
-      // Search for news using Brave Search API
       const searchQuery = `${exhibition.name} ${exhibition.industry || ''} 2026`.trim()
       const searchResults = await searchNews(searchQuery)
 
-      // Save news to database
       for (const item of searchResults) {
         try {
-          // Skip if URL is empty or invalid
           if (!item.url || item.url.length < 10) continue
           
           const source = extractDomain(item.url)
@@ -128,6 +115,7 @@ export async function fetchNewsForUpcomingExhibitions() {
               title: item.title,
               description: item.description || '',
               source: source,
+              category: category,
               publishedAt: item.published ? new Date(item.published) : new Date(),
             },
             create: {
@@ -136,6 +124,7 @@ export async function fetchNewsForUpcomingExhibitions() {
               url: item.url,
               description: item.description || '',
               source: source,
+              category: category,
               publishedAt: item.published ? new Date(item.published) : new Date(),
             }
           })
@@ -146,8 +135,6 @@ export async function fetchNewsForUpcomingExhibitions() {
       }
 
       console.log(`✓ Fetched news for ${exhibition.name}`)
-      
-      // Rate limiting: wait 1.1 seconds between requests
       await new Promise(resolve => setTimeout(resolve, 1100))
     } catch (error) {
       console.error(`✗ Failed to fetch news for ${exhibition.name}:`, error)

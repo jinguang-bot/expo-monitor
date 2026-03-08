@@ -1,13 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
 }
 
 model Exhibition {
@@ -38,6 +35,7 @@ model News {
   source        String
   url           String     @unique
   publishedAt   DateTime
+  category      String?  @default("行业动态")
   createdAt     DateTime   @default(now())
 
   @@map("news")

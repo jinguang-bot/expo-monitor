@@ -29,15 +29,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Exhibition not found' }, { status: 404 })
     }
 
-    // Search for news using Brave Search API
     const searchQuery = `${exhibition.name} ${exhibition.industry || ''} 2026`.trim()
     const searchResults = await searchNews(searchQuery)
 
-    // Save news to database
     const savedNews = []
     for (const item of searchResults) {
       try {
-        // Skip if URL is empty or invalid
         if (!item.url || item.url.length < 10) continue
         
         const source = extractDomain(item.url)
@@ -49,6 +46,7 @@ export async function POST(request: NextRequest) {
             title: item.title,
             description: item.description || '',
             source: source,
+            category: category,
             publishedAt: item.published ? new Date(item.published) : new Date(),
           },
           create: {
@@ -57,6 +55,7 @@ export async function POST(request: NextRequest) {
             url: item.url,
             description: item.description || '',
             source: source,
+            category: category,
             publishedAt: item.published ? new Date(item.published) : new Date(),
           }
         })
