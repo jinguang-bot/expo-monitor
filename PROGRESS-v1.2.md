@@ -269,3 +269,164 @@ npm run build
 
 **记录人:** OpenClaw AI Assistant  
 **最后更新:** 2026-03-08 11:23 GMT+8
+
+---
+
+## Phase 2: 新闻分类标签功能（完成！）✅
+
+**完成时间：** 11:15-11:50（35分钟）
+
+### ✅ 全部完成
+
+**Step 1: 填充现有新闻的 category（15分钟）**
+- ✅ 创建 `scripts/backfill-categories.ts`
+- ✅ 使用 `lib/categorize-news.ts` 的分类逻辑
+- ✅ 更新所有 98 条新闻的 category 字段
+- ✅ 输出统计信息：
+  ```
+  行业动态: 88 条
+  技术趋势: 8 条
+  市场分析: 2 条
+  产品发布: 0 条
+  ```
+
+**Step 2: 重新启用 category UI（15分钟）**
+- ✅ 恢复 `app/news/page.tsx` 的 category 功能：
+  - ✅ 恢复 getCategories() 函数
+  - ✅ 恢复 category 筛选下拉框
+  - ✅ 恢复 category 标签显示
+  - ✅ 添加 CATEGORY_LABELS 映射
+- ✅ 恢复 API 路由的 category 支持：
+  - ✅ `app/api/news/fetch/route.ts` - 添加 category 赋值
+  - ✅ `lib/cron.ts` - 添加 category 赋值
+
+**Step 3: 测试（5分钟）**
+- ✅ 运行填充脚本：98 条新闻已分类
+- ✅ 构建项目：成功（6.5s）
+- ✅ 验证 category 功能正常工作
+- ✅ 测试搜索、筛选功能
+
+**Step 4: 提交代码**
+- ✅ Git commit: `feat: complete news categorization (v1.2 Phase 2)`
+- ✅ Git push 到 origin/main
+- ✅ 更新 PROGRESS-v1.2.md
+
+### 📊 技术实现
+
+**填充脚本：**
+```typescript
+// scripts/backfill-categories.ts
+const news = await prisma.news.findMany({
+  select: { id: true, title: true, description: true, category: true }
+})
+
+for (const item of news) {
+  if (item.category) continue
+  
+  const category = categorizeNews(item.title, item.description || '')
+  
+  await prisma.news.update({
+    where: { id: item.id },
+    data: { category }
+  })
+}
+```
+
+**Category UI：**
+```tsx
+// 分类筛选
+<select name="category">
+  <option value="all">全部分类</option>
+  {categories.map((category) => (
+    <option key={category} value={category}>
+      {CATEGORY_LABELS[category] || category}
+    </option>
+  ))}
+</select>
+
+// 分类标签显示
+{item.category && (
+  <span className="px-2 py-1 bg-gray-100 rounded text-xs">
+    {CATEGORY_LABELS[item.category] || item.category}
+  </span>
+)}
+```
+
+**分类标签映射：**
+```typescript
+const CATEGORY_LABELS: Record<string, string> = {
+  '产品发布': '🚀 产品发布',
+  '行业动态': '📰 行业动态',
+  '技术趋势': '💡 技术趋势',
+  '市场分析': '📊 市场分析',
+}
+```
+
+### 🧪 构建测试
+
+```bash
+npm run build
+```
+
+**结果：**
+- ✅ 编译成功（6.5s）
+- ✅ 所有路由正常
+- ✅ 无 TypeScript 错误
+- ✅ 数据验证通过（98条新闻已分类）
+
+**路由列表：**
+```
+├ ○ /                        # 首页
+├ ○ /dashboard               # 数据看板
+├ ƒ /exhibitions             # 展会列表
+├ ƒ /exhibitions/[id]        # 展会详情
+└ ƒ /news                    # 新闻列表（带分类筛选）
+```
+
+### 📝 文件修改
+
+**新增文件：**
+- `scripts/backfill-categories.ts` - 填充脚本
+
+**修改文件：**
+- `prisma/schema.prisma` - 添加 category 字段
+- `app/news/page.tsx` - 恢复 category UI
+- `app/api/news/fetch/route.ts` - 添加 category 赋值
+- `lib/cron.ts` - 添加 category 赋值
+
+---
+
+## Phase 2 完成总结
+
+**✅ Phase 2 已 100% 完成！**
+
+**功能完整性：**
+- ✅ 数据库字段已添加
+- ✅ 分类逻辑已实现
+- ✅ 数据已填充（98条）
+- ✅ UI 已启用（筛选 + 显示）
+- ✅ API 已更新
+- ✅ 构建成功
+- ✅ 代码已推送
+
+**用户价值：**
+- ✅ 可以按分类筛选新闻
+- ✅ 新闻列表显示分类标签
+- ✅ 提升新闻浏览效率
+- ✅ 增强用户体验
+
+**下一步：Phase 3 - 数据看板优化**
+- 安装 Recharts 图表库
+- 新闻趋势图（按时间）
+- 展会活跃度排名
+- 分类分布图
+
+---
+
+**Phase 2 状态：** ✅ 完成（35分钟）  
+**总体进度：** Phase 1 ✅ + Phase 2 ✅
+
+---
+
+**记录人:** OpenClaw AI Assistant  
+**最后更新:** 2026-03-08 11:50 GMT+8
