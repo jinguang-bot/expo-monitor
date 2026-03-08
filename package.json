@@ -16,12 +16,14 @@
     "@prisma/client": "^6.4.0",
     "@types/node-cron": "^3.0.11",
     "axios": "^1.7.0",
+    "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "next": "^15.3.0",
     "node-cron": "^4.2.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "recharts": "^2.15.4"
+    "recharts": "^2.15.4",
+    "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {
     "@types/node": "^20",

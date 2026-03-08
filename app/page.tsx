@@ -77,7 +77,7 @@ export default async function HomePage() {
                   {exhibition.status === 'ongoing' ? '进行中' : exhibition.status === 'upcoming' ? '即将开始' : '已结束'}
                 </span>
               </div>
-              <p className="text-sm text-gray-500 mb-2">{exhibition.country} · {exhibition.city}</p>
+              <p className="text-sm text-gray-500 mb-2">{exhibition.country} · {exhibition.location}</p>
               <p className="text-sm text-gray-600">
                 {new Date(exhibition.startDate).toLocaleDateString('zh-CN')} - {new Date(exhibition.endDate).toLocaleDateString('zh-CN')}
               </p>

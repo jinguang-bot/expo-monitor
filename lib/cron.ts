@@ -1,6 +1,15 @@
 import { prisma } from './prisma'
 import { searchNews } from './brave-search'
 
+function extractDomain(url: string): string {
+  try {
+    const urlObj = new URL(url)
+    return urlObj.hostname.replace('www.', '')
+  } catch {
+    return 'Unknown'
+  }
+}
+
 /**
  * Fetch news for all exhibitions
  * This function can be called by a cron job or manually
@@ -29,12 +38,14 @@ export async function fetchNewsForAllExhibitions() {
           // Skip if URL is empty or invalid
           if (!item.url || item.url.length < 10) continue
           
+          const source = extractDomain(item.url)
+          
           await prisma.news.upsert({
             where: { url: item.url },
             update: {
               title: item.title,
               description: item.description || '',
-              source: item.source || 'Unknown',
+              source: source,
               publishedAt: item.published ? new Date(item.published) : new Date(),
             },
             create: {
@@ -42,7 +53,7 @@ export async function fetchNewsForAllExhibitions() {
               title: item.title,
               url: item.url,
               description: item.description || '',
-              source: item.source || 'Unknown',
+              source: source,
               publishedAt: item.published ? new Date(item.published) : new Date(),
             }
           })
@@ -63,27 +74,20 @@ export async function fetchNewsForAllExhibitions() {
   }
 
   console.log(`\nNews fetch completed:`)
-  console.log(`- Total news: ${totalNews}`)
-  console.log(`- Errors: ${errors}`)
-  console.log(`- Exhibitions processed: ${exhibitions.length}`)
+  console.log(`  Total news saved: ${totalNews}`)
+  console.log(`  Errors: ${errors}`)
 
-  return {
-    totalNews,
-    errors,
-    exhibitionsProcessed: exhibitions.length
-  }
+  return { totalNews, errors }
 }
 
 /**
- * Fetch news for upcoming exhibitions only
- * More efficient for regular cron jobs
+ * Fetch news for upcoming exhibitions (next 3 months)
  */
 export async function fetchNewsForUpcomingExhibitions() {
   console.log('Starting news fetch for upcoming exhibitions...')
   
   const now = new Date()
-  const threeMonthsLater = new Date()
-  threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3)
+  const threeMonthsLater = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000)
 
   const exhibitions = await prisma.exhibition.findMany({
     where: {
@@ -95,26 +99,31 @@ export async function fetchNewsForUpcomingExhibitions() {
     select: { id: true, name: true, industry: true }
   })
 
-  console.log(`Found ${exhibitions.length} upcoming exhibitions in next 3 months`)
+  console.log(`Found ${exhibitions.length} upcoming exhibitions`)
 
   let totalNews = 0
   let errors = 0
 
   for (const exhibition of exhibitions) {
     try {
+      // Search for news using Brave Search API
       const searchQuery = `${exhibition.name} ${exhibition.industry || ''} 2026`.trim()
       const searchResults = await searchNews(searchQuery)
 
+      // Save news to database
       for (const item of searchResults) {
         try {
+          // Skip if URL is empty or invalid
           if (!item.url || item.url.length < 10) continue
+          
+          const source = extractDomain(item.url)
           
           await prisma.news.upsert({
             where: { url: item.url },
             update: {
               title: item.title,
               description: item.description || '',
-              source: item.source || 'Unknown',
+              source: source,
               publishedAt: item.published ? new Date(item.published) : new Date(),
             },
             create: {
@@ -122,27 +131,29 @@ export async function fetchNewsForUpcomingExhibitions() {
               title: item.title,
               url: item.url,
               description: item.description || '',
-              source: item.source || 'Unknown',
+              source: source,
               publishedAt: item.published ? new Date(item.published) : new Date(),
             }
           })
           totalNews++
         } catch (error) {
-          console.error(`Failed to save news:`, error)
+          console.error(`Failed to save news for ${exhibition.name}:`, error)
         }
       }
 
-      console.log(`✓ ${exhibition.name}`)
+      console.log(`✓ Fetched ${searchResults.length} news for ${exhibition.name}`)
+      
+      // Rate limiting: wait 1.1 seconds between requests
       await new Promise(resolve => setTimeout(resolve, 1100))
     } catch (error) {
-      console.error(`✗ ${exhibition.name}:`, error)
+      console.error(`✗ Failed to fetch news for ${exhibition.name}:`, error)
       errors++
     }
   }
 
-  return {
-    totalNews,
-    errors,
-    exhibitionsProcessed: exhibitions.length
-  }
+  console.log(`\nNews fetch completed:`)
+  console.log(`  Total news saved: ${totalNews}`)
+  console.log(`  Errors: ${errors}`)
+
+  return { totalNews, errors }
 }

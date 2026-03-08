@@ -33,6 +33,9 @@ export default function RootLayout({
                     <Link href="/exhibitions" className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900">
                       展会列表
                     </Link>
+                    <Link href="/news" className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900">
+                      新闻列表
+                    </Link>
                     <Link href="/dashboard" className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-900">
                       数据看板
                     </Link>

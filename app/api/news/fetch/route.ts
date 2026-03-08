@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { searchNews } from '@/lib/brave-search'
 
+function extractDomain(url: string): string {
+  try {
+    const urlObj = new URL(url)
+    return urlObj.hostname.replace('www.', '')
+  } catch {
+    return 'Unknown'
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -30,39 +39,41 @@ export async function POST(request: NextRequest) {
         // Skip if URL is empty or invalid
         if (!item.url || item.url.length < 10) continue
         
+        const source = extractDomain(item.url)
+        
         const news = await prisma.news.upsert({
           where: { url: item.url },
           update: {
             title: item.title,
             description: item.description || '',
-            source: item.source || 'Unknown',
-            publishedAt: item.publishedAt ? new Date(item.publishedAt) : new Date(),
+            source: source,
+            publishedAt: item.published ? new Date(item.published) : new Date(),
           },
           create: {
             exhibitionId,
             title: item.title,
             url: item.url,
             description: item.description || '',
-            source: item.source || 'Unknown',
-            publishedAt: item.publishedAt ? new Date(item.publishedAt) : new Date(),
+            source: source,
+            publishedAt: item.published ? new Date(item.published) : new Date(),
           }
         })
         savedNews.push(news)
       } catch (error) {
-        console.error('Failed to save news:', error)
+        console.error(`Failed to save news: ${item.title}`, error)
       }
     }
 
     return NextResponse.json({ 
-      success: true, 
+      success: true,
       count: savedNews.length,
-      news: savedNews 
+      news: savedNews
     })
   } catch (error) {
-    console.error('Failed to fetch news:', error)
-    return NextResponse.json({ 
-      error: 'Failed to fetch news',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 })
+    console.error('News fetch error:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch news' },
+      { status: 500 }
+    )
   }
 }
