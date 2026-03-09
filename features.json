@@ -1,0 +1,110 @@
+{
+  "projectName": "Expo Monitor",
+  "version": "1.1.0",
+  "lastUpdated": "2026-03-09T01:55:00Z",
+  "totalFeatures": 4,
+  "completedFeatures": 0,
+  "features": [
+    {
+      "id": "F001",
+      "category": "automation",
+      "description": "自动定时抓取 - 每天自动抓取最新新闻，支持自定义抓取频率，失败重试机制",
+      "steps": [
+        "创建新闻抓取函数（基于现有的Brave Search API）✅",
+        "添加失败重试逻辑（最多3次）✅",
+        "修复Prisma schema和类型错误✅",
+        "创建定时任务调度系统（使用node-cron）⏳",
+        "实现抓取频率配置（默认每天1次，可自定义）⏳",
+        "添加抓取日志记录⏳",
+        "创建API端点 (/api/scheduler/*)⏳",
+        "测试：手动触发抓取任务⏳",
+        "测试：验证定时任务按预期运行⏳",
+        "测试：模拟失败场景，验证重试机制⏳"
+      ],
+      "passes": false,
+      "priority": "high",
+      "lastChecked": "2026-03-09T01:55:00Z",
+      "testResults": {
+        "unit": false,
+        "integration": false,
+        "e2e": false
+      },
+      "progress": 50
+    },
+    {
+      "id": "F002",
+      "category": "search",
+      "description": "新闻搜索和筛选 - 全文搜索新闻内容，按时间范围筛选，按来源筛选",
+      "steps": [
+        "扩展Prisma schema，添加新闻内容的全文索引",
+        "实现新闻搜索API（/api/news/search）",
+        "支持关键词搜索（标题+描述）",
+        "支持时间范围筛选（startDate, endDate）",
+        "支持来源筛选（source）",
+        "实现分页和排序",
+        "添加搜索结果高亮",
+        "测试：搜索API返回正确结果",
+        "测试：筛选条件正常工作",
+        "测试：前端搜索界面可用"
+      ],
+      "passes": false,
+      "priority": "high",
+      "lastChecked": null,
+      "testResults": {
+        "unit": false,
+        "integration": false,
+        "e2e": false
+      },
+      "progress": 0
+    },
+    {
+      "id": "F003",
+      "category": "categorization",
+      "description": "新闻分类标签 - 自动生成新闻标签，手动标签管理，标签云展示",
+      "steps": [
+        "扩展Prisma schema，添加Tag模型和NewsTag关联表",
+        "实现自动标签生成（基于关键词提取）",
+        "创建标签管理API（CRUD操作）",
+        "实现手动标签分配功能",
+        "创建标签云组件（前端）",
+        "支持按标签筛选新闻",
+        "测试：自动标签生成准确",
+        "测试：标签CRUD操作正常",
+        "测试：标签云显示正确"
+      ],
+      "passes": false,
+      "priority": "medium",
+      "lastChecked": null,
+      "testResults": {
+        "unit": false,
+        "integration": false,
+        "e2e": false
+      },
+      "progress": 0
+    },
+    {
+      "id": "F004",
+      "category": "optimization",
+      "description": "搜索优化 - 大小写不敏感搜索，模糊搜索支持，搜索结果高亮",
+      "steps": [
+        "优化数据库查询（添加索引）",
+        "实现大小写不敏感搜索（SQLite使用COLLATE NOCASE）",
+        "添加模糊搜索支持（使用LIKE或全文搜索）",
+        "实现搜索结果高亮（标记匹配关键词）",
+        "优化搜索性能（添加缓存）",
+        "测试：大小写不敏感搜索正常",
+        "测试：模糊搜索返回相关结果",
+        "测试：搜索性能 < 500ms"
+      ],
+      "passes": false,
+      "priority": "medium",
+      "lastChecked": null,
+      "testResults": {
+        "unit": false,
+        "integration": false,
+        "e2e": false
+      },
+      "progress": 0
+    }
+  ]
+}

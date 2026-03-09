@@ -7,7 +7,7 @@ export async function GET(
 ) {
   const { id } = await params
   
-  const exhibition = await prisma.exhibition.findUnique({
+  const exhibition = await prisma.exhibitions.findUnique({
     where: { id },
     include: {
       news: {

@@ -289,7 +289,7 @@ async function main() {
   console.log('Starting seeding...')
 
   for (const exhibition of exhibitions) {
-    const created = await prisma.exhibition.create({
+    const created = await prisma.exhibitions.create({
       data: {
         name: exhibition.name,
         description: exhibition.description,

@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     orderBy: { publishedAt: 'desc' },
     take: limit,
     include: {
-      exhibition: {
+      exhibitions: {
         select: { name: true }
       }
     }

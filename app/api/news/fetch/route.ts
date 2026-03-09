@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { searchNews } from '@/lib/brave-search'
-import { categorizeNews } from '@/lib/categorize-news'
+import { randomUUID } from 'crypto'
 
 function extractDomain(url: string): string {
   try {
@@ -10,6 +10,28 @@ function extractDomain(url: string): string {
   } catch {
     return 'Unknown'
   }
+}
+
+function categorizeNews(title: string, description: string): string {
+  const lowerTitle = title.toLowerCase()
+  const lowerDesc = (description || '').toLowerCase()
+  
+  if (lowerTitle.includes('launch') || lowerTitle.includes('release') || 
+      lowerTitle.includes('announce') || lowerTitle.includes('unveil')) {
+    return '产品发布'
+  }
+  
+  if (lowerDesc.includes('ai') || lowerDesc.includes('artificial intelligence') ||
+      lowerDesc.includes('machine learning') || lowerDesc.includes('technology')) {
+    return '技术趋势'
+  }
+  
+  if (lowerDesc.includes('market') || lowerDesc.includes('industry') || 
+      lowerDesc.includes('growth') || lowerDesc.includes('analysis')) {
+    return '市场分析'
+  }
+  
+  return '行业动态'
 }
 
 export async function POST(request: NextRequest) {
@@ -21,7 +43,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'exhibitionId is required' }, { status: 400 })
     }
 
-    const exhibition = await prisma.exhibition.findUnique({
+    const exhibition = await prisma.exhibitions.findUnique({
       where: { id: exhibitionId }
     })
 
@@ -50,6 +72,7 @@ export async function POST(request: NextRequest) {
             publishedAt: item.published ? new Date(item.published) : new Date(),
           },
           create: {
+            id: randomUUID(),
             exhibitionId,
             title: item.title,
             url: item.url,

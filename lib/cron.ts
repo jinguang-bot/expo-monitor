@@ -1,6 +1,6 @@
 import { prisma } from './prisma'
 import { searchNews } from './brave-search'
-import { categorizeNews } from './categorize-news'
+import { randomUUID } from 'crypto'
 
 function extractDomain(url: string): string {
   try {
@@ -11,10 +11,32 @@ function extractDomain(url: string): string {
   }
 }
 
+function categorizeNews(title: string, description: string): string {
+  const lowerTitle = title.toLowerCase()
+  const lowerDesc = (description || '').toLowerCase()
+  
+  if (lowerTitle.includes('launch') || lowerTitle.includes('release') || 
+      lowerTitle.includes('announce') || lowerTitle.includes('unveil')) {
+    return '产品发布'
+  }
+  
+  if (lowerDesc.includes('ai') || lowerDesc.includes('artificial intelligence') ||
+      lowerDesc.includes('machine learning') || lowerDesc.includes('technology')) {
+    return '技术趋势'
+  }
+  
+  if (lowerDesc.includes('market') || lowerDesc.includes('industry') || 
+      lowerDesc.includes('growth') || lowerDesc.includes('analysis')) {
+    return '市场分析'
+  }
+  
+  return '行业动态'
+}
+
 export async function fetchNewsForAllExhibitions() {
   console.log('Starting news fetch for all exhibitions...')
   
-  const exhibitions = await prisma.exhibition.findMany({
+  const exhibitions = await prisma.exhibitions.findMany({
     select: { id: true, name: true, industry: true }
   })
 
@@ -45,6 +67,7 @@ export async function fetchNewsForAllExhibitions() {
               publishedAt: item.published ? new Date(item.published) : new Date(),
             },
             create: {
+              id: randomUUID(),
               exhibitionId: exhibition.id,
               title: item.title,
               url: item.url,
@@ -81,7 +104,7 @@ export async function fetchNewsForUpcomingExhibitions() {
   const now = new Date()
   const threeMonthsLater = new Date(now.getFullYear(), now.getMonth() + 3, now.getDate())
   
-  const upcomingExhibitions = await prisma.exhibition.findMany({
+  const upcomingExhibitions = await prisma.exhibitions.findMany({
     where: {
       startDate: {
         gte: now,
@@ -119,6 +142,7 @@ export async function fetchNewsForUpcomingExhibitions() {
               publishedAt: item.published ? new Date(item.published) : new Date(),
             },
             create: {
+              id: randomUUID(),
               exhibitionId: exhibition.id,
               title: item.title,
               url: item.url,

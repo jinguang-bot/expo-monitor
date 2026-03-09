@@ -19,7 +19,7 @@ async function getExhibitions(params: { status?: string; country?: string; searc
     ]
   }
   
-  return prisma.exhibition.findMany({
+  return prisma.exhibitions.findMany({
     where,
     orderBy: { startDate: 'asc' },
     include: {
@@ -31,7 +31,7 @@ async function getExhibitions(params: { status?: string; country?: string; searc
 }
 
 async function getCountries() {
-  const exhibitions = await prisma.exhibition.findMany({
+  const exhibitions = await prisma.exhibitions.findMany({
     select: { country: true },
     distinct: ['country']
   })

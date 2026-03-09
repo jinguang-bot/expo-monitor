@@ -14,7 +14,7 @@ async function getNews(params: {
     where.OR = [
       { title: { contains: params.search, mode: 'insensitive' } },
       { description: { contains: params.search, mode: 'insensitive' } },
-      { exhibition: { name: { contains: params.search, mode: 'insensitive' } } },
+      { exhibitions: { name: { contains: params.search, mode: 'insensitive' } } },
     ]
   }
   
@@ -38,7 +38,7 @@ async function getNews(params: {
     where,
     orderBy: { publishedAt: 'desc' },
     include: {
-      exhibition: {
+      exhibitions: {
         select: {
           id: true,
           name: true,
@@ -51,7 +51,7 @@ async function getNews(params: {
 }
 
 async function getExhibitions() {
-  return prisma.exhibition.findMany({
+  return prisma.exhibitions.findMany({
     select: { id: true, name: true, country: true },
     orderBy: { name: 'asc' }
   })
@@ -213,13 +213,13 @@ export default async function NewsPage({
             
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2 flex-wrap">
-                {item.exhibition && (
+                {item.exhibitions && (
                   <Link 
-                    href={`/exhibitions/${item.exhibition.id}`}
+                    href={`/exhibitions/${item.exhibitions.id}`}
                     className="text-blue-600 hover:underline"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    {item.exhibition.name}
+                    {item.exhibitions.name}
                   </Link>
                 )}
                 {item.category && (

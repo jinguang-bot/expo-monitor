@@ -3,16 +3,16 @@ import { prisma } from '@/lib/prisma'
 
 async function getStats() {
   const [totalExhibitions, upcomingExhibitions, ongoingExhibitions, totalNews] = await Promise.all([
-    prisma.exhibition.count(),
-    prisma.exhibition.count({ where: { status: 'upcoming' } }),
-    prisma.exhibition.count({ where: { status: 'ongoing' } }),
+    prisma.exhibitions.count(),
+    prisma.exhibitions.count({ where: { status: 'upcoming' } }),
+    prisma.exhibitions.count({ where: { status: 'ongoing' } }),
     prisma.news.count(),
   ])
   return { totalExhibitions, upcomingExhibitions, ongoingExhibitions, totalNews }
 }
 
 async function getFeaturedExhibitions() {
-  return prisma.exhibition.findMany({
+  return prisma.exhibitions.findMany({
     where: {
       OR: [
         { status: 'ongoing' },

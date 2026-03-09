@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
 
 async function getDashboardData() {
-  const exhibitions = await prisma.exhibition.findMany({
+  const exhibitions = await prisma.exhibitions.findMany({
     include: {
       _count: {
         select: { news: true }

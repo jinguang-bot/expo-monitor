@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 async function getExhibition(id: string) {
-  return prisma.exhibition.findUnique({
+  return prisma.exhibitions.findUnique({
     where: { id },
     include: {
       news: {

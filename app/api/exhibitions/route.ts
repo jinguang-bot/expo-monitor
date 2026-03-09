@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     ]
   }
 
-  const exhibitions = await prisma.exhibition.findMany({
+  const exhibitions = await prisma.exhibitions.findMany({
     where,
     orderBy: { startDate: 'asc' },
     include: {
