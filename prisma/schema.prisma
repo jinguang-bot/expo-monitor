@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -22,6 +22,10 @@ model exhibitions {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   news        news[]
+
+  @@index([status])
+  @@index([country])
+  @@index([industry])
 }
 
 model news {
@@ -35,4 +39,8 @@ model news {
   createdAt    DateTime    @default(now())
   category     String?
   exhibitions  exhibitions @relation(fields: [exhibitionId], references: [id], onDelete: Cascade)
+
+  @@index([exhibitionId])
+  @@index([publishedAt])
+  @@index([category])
 }
